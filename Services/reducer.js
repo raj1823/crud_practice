@@ -3,8 +3,6 @@ import {DATA_SUCCESS, TOGGLE, UPDATE_RECORD} from './constant';
 const initialState = {
   employeeData: [],
   visible: false,
-  //isPopupVisible: true,
- 
 };
 
 const data_Reducer = (state = initialState, action) => {
@@ -15,7 +13,6 @@ const data_Reducer = (state = initialState, action) => {
     case TOGGLE:
       return {...state, visible: action.visible};
 
-  
     default:
       return {...state};
   }

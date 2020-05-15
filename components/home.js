@@ -1,4 +1,4 @@
-import React,{useState} from 'react';
+import React, {useState} from 'react';
 import {
   Text,
   Image,
@@ -9,57 +9,48 @@ import {
   FlatList,
 } from 'react-native';
 import {connect} from 'react-redux';
-import Popup from './popup'
-import ActivityWaiter from './activityWaiter'
+import Popup from './popup';
+import ActivityWaiter from './activityWaiter';
 import {performAction, toggleVisible} from '../Services/action';
 import {FETCH_DATA_API, DELETE_RECORD_API} from '../Services/constant';
-
-
-
-
 
 class Home extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
       rowSelected: null,
-      isloading:true
-   
-     
+      isloading: true,
     };
   }
 
   componentDidMount() {
-    this.props.performAction(FETCH_DATA_API, 'GET').then(resolve=>{
-
-      if(resolve==200)
-      {
-        this.setState({isloading:false})
-      }
-    },reject=>{
-      if(reject=="ERROR")
-      {
-        this.setState({isloading:false})
-        
-        
-
-      }
-    } )
+    this.props.performAction(FETCH_DATA_API, 'GET').then(
+      resolve => {
+        if (resolve == 200) {
+          this.setState({isloading: false});
+        }
+      },
+      reject => {
+        if (reject == 'ERROR') {
+          this.setState({isloading: false});
+        }
+      },
+    );
   }
   deleteRecord(id) {
-    this.props.performAction(DELETE_RECORD_API, 'DELETE', null, id).then(resolve=>{
-      if(resolve==200)
-      {
-        
-       this.setState({isloading:false})
-       alert("Record Deleted Successfully")
-      }
-    },reject=>{
-      alert("Cannot Delete Record")
-      this.setState({isloading:false})
-    })
+    this.props.performAction(DELETE_RECORD_API, 'DELETE', null, id).then(
+      resolve => {
+        if (resolve == 200) {
+          this.setState({isloading: false});
+          alert('Record Deleted Successfully');
+        }
+      },
+      reject => {
+        alert('Cannot Delete Record');
+        this.setState({isloading: false});
+      },
+    );
     this.props.performAction(FETCH_DATA_API, 'GET');
-    
   }
 
   render() {
@@ -67,9 +58,8 @@ class Home extends React.Component {
 
     return (
       <SafeAreaView style={{flex: 1, backgroundColor: 'black'}}>
-        
-       <Popup data={this.state.rowSelected}/>  
-       {this.state.isloading? <ActivityWaiter/>:null}
+        <Popup data={this.state.rowSelected} />
+        {this.state.isloading ? <ActivityWaiter /> : null}
         <View>
           <View
             style={{
@@ -84,8 +74,7 @@ class Home extends React.Component {
             <TouchableOpacity
               onPress={() => {
                 this.props.toggleVisibility(this.props.visible);
-                this.setState({rowSelected:null})
-               
+                this.setState({rowSelected: null});
               }}>
               <Text
                 style={{
@@ -143,10 +132,9 @@ class Home extends React.Component {
                       <View style={{marginHorizontal: 8}}>
                         <TouchableOpacity
                           onPress={() => {
-                            
-                            this.setState({rowSelected: item},()=> this.props.toggleVisibility(this.props.visible))
-
-                           
+                            this.setState({rowSelected: item}, () =>
+                              this.props.toggleVisibility(this.props.visible),
+                            );
                           }}>
                           <Image
                             source={require('../assets/edit.png')}
@@ -164,7 +152,7 @@ class Home extends React.Component {
                         <TouchableOpacity
                           onPress={() => {
                             this.deleteRecord(item._id);
-                            this.setState({isloading:true})
+                            this.setState({isloading: true});
                           }}>
                           <Image
                             source={require('../assets/delete.png')}
@@ -193,14 +181,12 @@ const styles = StyleSheet.create({});
 const mapStateToProps = state => ({
   employee_data: state.data_Reducer.employeeData,
   visible: state.data_Reducer.visible,
-
 });
 
 const mapDispatchToProps = {
   performAction: performAction,
 
   toggleVisibility: toggleVisible,
-  
 };
 
 export default connect(

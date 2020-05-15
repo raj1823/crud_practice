@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, Modal, View, SafeAreaView} from 'react-native';
+import {StyleSheet, Modal, View, SafeAreaView} from 'react-native';
 
 import {
   BallIndicator,
@@ -17,32 +17,32 @@ class ActivityWaiter extends React.Component {
   render() {
     return (
       <Modal transparent={true} animationType={'fade'} visible={true}>
-          <View style={style.modalBackground}>
-    <View style={style.activityIndicatorWrapper}>
-        <SkypeIndicator color="#e4264e" size={50} />
-        </View>
+        <View style={style.modalBackground}>
+          <View style={style.activityIndicatorWrapper}>
+            <SkypeIndicator color="#e4264e" size={50} />
+          </View>
         </View>
       </Modal>
     );
   }
 }
 const style = StyleSheet.create({
-    modalBackground: {
-        flex: 1,
-        alignItems: 'center',
-        flexDirection: 'column',
-        justifyContent: 'space-around',
-        backgroundColor: '#181f29'
-      },
-      activityIndicatorWrapper: {
-        backgroundColor: '#181f29',
-        height: 100,
-        padding:20,
-        width: 100,
-        borderRadius: 10,
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'space-around'
-      }
+  modalBackground: {
+    flex: 1,
+    alignItems: 'center',
+    flexDirection: 'column',
+    justifyContent: 'space-around',
+    backgroundColor: '#181f29',
+  },
+  activityIndicatorWrapper: {
+    backgroundColor: '#181f29',
+    height: 100,
+    padding: 20,
+    width: 100,
+    borderRadius: 10,
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'space-around',
+  },
 });
 export default ActivityWaiter;
