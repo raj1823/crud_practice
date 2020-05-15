@@ -6,11 +6,12 @@ import Dialog, {
   DialogFooter,
   DialogButton,
 } from 'react-native-popup-dialog';
+import ActivityWaiter from './activityWaiter'
 
 import {connect} from 'react-redux';
 import {toggleVisible, performAction} from '../Services/action';
 
-import {ADD_RECORD_API, UPDATE_RECORD_API} from '../Services/constant';
+import {ADD_RECORD_API, UPDATE_RECORD_API,FETCH_DATA_API} from '../Services/constant';
 
 import {
   View,
@@ -25,30 +26,34 @@ class Popup extends React.Component {
   constructor(props) {
     super(props);
     this.state={
-      emp_username:"",
-      emp_phone_number: "",
-      emp_email:"",
-      emp_name:""
+       emp_username : " ",
+       emp_phone_number : " ",
+       emp_email : " ",
+       emp_name : " ",
+       isLoading:false,
 
     }
    
   }
 
-  selectCall(data, username, phone_number, email,name) {
+  selectCall(data) {
+    console.log("under select call",this.state.emp_email)
     let record_data = {
-      e_username: username,
-      e_phone_number: phone_number,
-      e_email: email,
-      e_name: name
+      username: this.state.emp_username,
+      phone_number: this.state.emp_phone_number,
+      email: this.state.emp_email,
+      name: this.state.emp_name
     };
     console.log('select called--------------');
-    if (data === null) {
-      console.log('add record called-----------------');
 
-      performAction(ADD_RECORD_API, 'POST', record_data).then(
+    if (data === null) {
+      console.log('add record called-----------------',record_data);
+
+      this.props.performAction(ADD_RECORD_API, 'POST', record_data).then(
         resolve => {
           if (resolve == 200) {
             alert('Record Added Successfully');
+            this.props.performAction(FETCH_DATA_API, 'GET');
           }
         },
         reject => {
@@ -59,11 +64,13 @@ class Popup extends React.Component {
       );
     } else {
       console.log('update record called----------------');
-
-      performAction(UPDATE_RECORD_API, 'PUT', record_data,this.props.data._id).then(
+        console.log("selected field:",this.props.data)
+     this.props.performAction(UPDATE_RECORD_API, 'PUT', record_data, this.props.data._id).then(
         resolve => {
           if (resolve == 200) {
             alert('Record Updated Succefully');
+            this.props.performAction(FETCH_DATA_API, 'GET');
+            this.setState({isLoading:false})
           }
         },
         reject => {
@@ -75,7 +82,7 @@ class Popup extends React.Component {
     }
   }
   componentDidUpdate() {
-    //console.log('name:', this.state.emp_username);
+    console.log('name:', this.state.emp_username);
   }
   render() {
     console.log('Row Data:', this.props.data);
@@ -83,6 +90,8 @@ class Popup extends React.Component {
     const { emp_email,emp_phone_number,emp_username,emp_name} = this.state;
 
     return (
+      <View>
+        {this.state.isLoading? <ActivityWaiter/>:
       <View style={{alignItems: 'center'}}>
         <Dialog
           visible={this.props.visible}
@@ -93,6 +102,7 @@ class Popup extends React.Component {
               <DialogButton
                 text="SUBMIT"
                 onPress={() => {
+                  console.log("before select call ",emp_username,emp_phone_number)
                   this.selectCall(this.props.data, emp_username, emp_phone_number, emp_email,emp_name);
                   
                   this.props.toggleVisibility(this.props.visible);
@@ -126,8 +136,8 @@ class Popup extends React.Component {
                     width: 200,
                   }}
                   
-                  onChangeText={text => {
-                    this.setState({emp_name:text})
+                  onChangeText={(text) => {
+                    this.setState({emp_name :text})
                   }}
                 />
               </View>
@@ -189,10 +199,12 @@ class Popup extends React.Component {
             </View>
           </DialogContent>
         </Dialog>
+      </View>}
       </View>
     );
   }
 }
+
 
 const mapStateToProps = state => ({
   visible: state.data_Reducer.visible,
@@ -201,6 +213,7 @@ const mapStateToProps = state => ({
 
 const mapDispatchToProps = {
   toggleVisibility: toggleVisible,
+  performAction: performAction,
 };
 
 export default connect(

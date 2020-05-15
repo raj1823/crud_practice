@@ -10,6 +10,7 @@ import {
 } from 'react-native';
 import {connect} from 'react-redux';
 import Popup from './popup'
+import ActivityWaiter from './activityWaiter'
 import {performAction, toggleVisible} from '../Services/action';
 import {FETCH_DATA_API, DELETE_RECORD_API} from '../Services/constant';
 
@@ -22,16 +23,43 @@ class Home extends React.Component {
     super(props);
     this.state = {
       rowSelected: null,
+      isloading:true
    
      
     };
   }
 
   componentDidMount() {
-    this.props.performAction(FETCH_DATA_API, 'GET');
+    this.props.performAction(FETCH_DATA_API, 'GET').then(resolve=>{
+
+      if(resolve==200)
+      {
+        this.setState({isloading:false})
+      }
+    },reject=>{
+      if(reject=="ERROR")
+      {
+        this.setState({isloading:false})
+        
+        
+
+      }
+    } )
   }
   deleteRecord(id) {
-    this.props.performAction(DELETE_RECORD_API, 'DELETE', null, id);
+    this.props.performAction(DELETE_RECORD_API, 'DELETE', null, id).then(resolve=>{
+      if(resolve==200)
+      {
+        
+       this.setState({isloading:false})
+       alert("Record Deleted Successfully")
+      }
+    },reject=>{
+      alert("Cannot Delete Record")
+      this.setState({isloading:false})
+    })
+    this.props.performAction(FETCH_DATA_API, 'GET');
+    
   }
 
   render() {
@@ -39,7 +67,9 @@ class Home extends React.Component {
 
     return (
       <SafeAreaView style={{flex: 1, backgroundColor: 'black'}}>
+        
        <Popup data={this.state.rowSelected}/>  
+       {this.state.isloading? <ActivityWaiter/>:null}
         <View>
           <View
             style={{
@@ -134,6 +164,7 @@ class Home extends React.Component {
                         <TouchableOpacity
                           onPress={() => {
                             this.deleteRecord(item._id);
+                            this.setState({isloading:true})
                           }}>
                           <Image
                             source={require('../assets/delete.png')}
