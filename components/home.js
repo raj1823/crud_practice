@@ -7,6 +7,7 @@ import {
   TouchableOpacity,
   StyleSheet,
   FlatList,
+  Alert
 } from 'react-native';
 import {connect} from 'react-redux';
 import Popup from './popup';
@@ -19,7 +20,7 @@ class Home extends React.Component {
     super(props);
     this.state = {
       rowSelected: null,
-      isloading: true,
+      isLoading: true,
     };
   }
 
@@ -27,13 +28,19 @@ class Home extends React.Component {
     this.props.performAction(FETCH_DATA_API, 'GET').then(
       resolve => {
         if (resolve == 200) {
-          this.setState({isloading: false});
+          this.setState({isLoading: false});
         }
       },
       reject => {
         if (reject == 'ERROR') {
-          this.setState({isloading: false});
+          
+          Alert.alert("ERROR","Cannot Fetch Data at this moment. Please Try again later..!",
+                     [ { text: 'OK', onPress: () => {this.setState({isLoading:false}) }  }])
+          
+          
+          
         }
+
       },
     );
   }
@@ -41,16 +48,39 @@ class Home extends React.Component {
     this.props.performAction(DELETE_RECORD_API, 'DELETE', null, id).then(
       resolve => {
         if (resolve == 200) {
-          this.setState({isloading: false});
-          alert('Record Deleted Successfully');
+          Alert.alert("SUCCESS","Record Deleted Successfully",
+                     [ { text: 'OK', onPress: () => {this.setState({isLoading:false}) }  }])
+
+                    
+                     this.props.performAction(FETCH_DATA_API, 'GET').then(
+                      resolve => {
+                        if (resolve == 200) {
+                          
+                        }
+                      },
+                      reject => {
+                        if (reject == 'ERROR') {
+                          
+                          Alert.alert("ERROR","Cannot Fetch Data at this moment. Please Try again later..!",
+                                     [ { text: 'OK', onPress: () => {this.setState({isLoading:false}) }  }])
+                          
+                          
+                          
+                        }
+                
+                      },
+                    );
         }
       },
       reject => {
+        if(reject=="ERROR")
+        {
         alert('Cannot Delete Record');
-        this.setState({isloading: false});
+        this.setState({isLoading: false});
+        }
       },
     );
-    this.props.performAction(FETCH_DATA_API, 'GET');
+   
   }
 
   render() {
@@ -59,7 +89,7 @@ class Home extends React.Component {
     return (
       <SafeAreaView style={{flex: 1, backgroundColor: 'black'}}>
         <Popup data={this.state.rowSelected} />
-        {this.state.isloading ? <ActivityWaiter /> : null}
+        {this.state.isLoading ? <ActivityWaiter /> : null}
         <View>
           <View
             style={{
@@ -152,7 +182,7 @@ class Home extends React.Component {
                         <TouchableOpacity
                           onPress={() => {
                             this.deleteRecord(item._id);
-                            this.setState({isloading: true});
+                            this.setState({isLoading: true});
                           }}>
                           <Image
                             source={require('../assets/delete.png')}

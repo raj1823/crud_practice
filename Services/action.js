@@ -72,12 +72,12 @@ export function performAction(API, method, data, id = '') {
                 else alert('EMPTY DATABASE');
               });
             } else {
-              alert('DATA FETCH ERROR');
+              
               reject('ERROR');
             }
           });
         } catch (error) {
-          reject('Error');
+          reject('ERROR');
         }
       });
     }

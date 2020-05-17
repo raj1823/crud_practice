@@ -24,6 +24,7 @@ import {
   Text,
   Image,
   SafeAreaView,
+  Alert
 } from 'react-native';
 
 class Popup extends React.Component {
@@ -54,8 +55,28 @@ class Popup extends React.Component {
       this.props.performAction(ADD_RECORD_API, 'POST', record_data).then(
         resolve => {
           if (resolve == 200) {
-            alert('Record Added Successfully');
-            this.props.performAction(FETCH_DATA_API, 'GET');
+            Alert.alert("SUCCESS","Record Added Successfully",
+                     [ { text: 'OK', onPress: () => {this.setState({isLoading:false}) }  }])
+
+                    
+                     this.props.performAction(FETCH_DATA_API, 'GET').then(
+                      resolve => {
+                        if (resolve == 200) {
+                          
+                        }
+                      },
+                      reject => {
+                        if (reject == 'ERROR') {
+                          
+                          Alert.alert("ERROR","Cannot Fetch Data at this moment. Please Try again later..!",
+                                     [ { text: 'OK', onPress: () => {this.setState({isLoading:false}) }  }])
+                          
+                          
+                          
+                        }
+                
+                      },
+                    );
           }
         },
         reject => {
@@ -77,9 +98,29 @@ class Popup extends React.Component {
         .then(
           resolve => {
             if (resolve == 200) {
-              alert('Record Updated Succefully');
-              this.props.performAction(FETCH_DATA_API, 'GET');
-              this.setState({isLoading: false});
+              Alert.alert("SUCCESS","Record Updated Successfully",
+              [ { text: 'OK', onPress: () => {this.setState({isLoading:false}) }  }])
+
+             
+              this.props.performAction(FETCH_DATA_API, 'GET').then(
+               resolve => {
+                 if (resolve == 200) {
+                   
+                 }
+               },
+               reject => {
+                 if (reject == 'ERROR') {
+                   
+                   Alert.alert("ERROR","Cannot Fetch Data at this moment. Please Try again later..!",
+                              [ { text: 'OK', onPress: () => {this.setState({isLoading:false}) }  }])
+                   
+                   
+                   
+                 }
+         
+               },
+             );
+              
             }
           },
           reject => {
@@ -94,7 +135,7 @@ class Popup extends React.Component {
     console.log('name:', this.state.emp_username);
   }
   render() {
-    console.log('Row Data:', this.props.data);
+    console.log('popup Visible:', this.props.visible);
 
     const {emp_email, emp_phone_number, emp_username, emp_name} = this.state;
 
@@ -104,6 +145,7 @@ class Popup extends React.Component {
           <ActivityWaiter />
         ) : (
           <View style={{alignItems: 'center'}}>
+            { this.props.visible? 
             <Dialog
               visible={this.props.visible}
               useNativeDriver={true}
@@ -113,11 +155,11 @@ class Popup extends React.Component {
                   <DialogButton
                     text="SUBMIT"
                     onPress={() => {
-                      console.log(
-                        'before select call ',
-                        emp_username,
-                        emp_phone_number,
-                      );
+                      this.props.toggleVisibility(this.props.visible)
+                       this.setState({isLoading:true})
+                       //setTimeout(()=>{ },2000)
+                     
+                     
                       this.selectCall(
                         this.props.data,
                         emp_username,
@@ -126,7 +168,7 @@ class Popup extends React.Component {
                         emp_name,
                       );
 
-                      this.props.toggleVisibility(this.props.visible);
+                     
                     }}
                   />
                   <DialogButton
@@ -225,7 +267,7 @@ class Popup extends React.Component {
                   </View>
                 </View>
               </DialogContent>
-            </Dialog>
+            </Dialog> : null}
           </View>
         )}
       </View>
